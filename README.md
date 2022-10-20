@@ -1,4 +1,4 @@
-# SQC_Sciptest
+# SQC_Scriptest
 My first scipt in Lua
 
 * Pick up Plastic at the marker
