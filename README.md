@@ -3,7 +3,7 @@ My first scipt in Lua
 
 * Pick up Plastic at the marker
 * treat it 
-* Sell to NPC
+* Sell to NPC.
 
 Firts update 10/20/22
 * Added that you cannot pickup or treat the item in a car
