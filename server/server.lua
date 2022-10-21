@@ -24,7 +24,7 @@ AddEventHandler("DeuxiemeEvent", function()
     exports.ox_inventory:AddItem(_src, 'oxy', random)
     Citizen.Wait(10)
     TriggerClientEvent('esx:showNotification', _src, 'Vous avez recu '..random..' oxy', 'success', 2000)
- -- https://docs.esx-framework.org/legacy/Client/events/shownotification
+
 
 end)
 
@@ -40,4 +40,3 @@ end)
 
 
 
--- https://docs.esx-framework.org/legacy/Server/functions/registerservercallback
