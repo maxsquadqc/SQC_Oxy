@@ -3,16 +3,16 @@ ESX = exports["es_extended"]:getSharedObject()
 
 -- RECOLTE
 Citizen.CreateThread(function()
-    
+
             while true do
                 
-                local count = exports.ox_inventory:Search('count', 'plastic')
+                local ox_inventory = exports.ox_inventory
                 local interval = 1 
                 local ped = PlayerPedId()   
                 local pos = GetEntityCoords(ped)
                 local car = IsPedInAnyVehicle(ped, false)
                 local distance = GetDistanceBetweenCoords(pos, Config.Position.Recolte.x, Config.Position.Recolte.y, Config.Position.Recolte.z, true)
-
+                
                 if car then
                     Citizen.Wait(0)
 
@@ -36,9 +36,10 @@ Citizen.CreateThread(function()
 if distance < 1 then
     ESX.TextUI(_U('recolte', "info"))
 
-        if IsControlJustPressed(1, 51) then
-
-            ESX.Progressbar('Recolte en cour...', 5000,{
+        if IsControlJustPressed(1, 51) then  -- when player press E it will start the recolte of plastic
+            ESX.HideUI()
+            
+            ESX.Progressbar('Recolte en cour...', 2000,{
                 FreezePlayer = true, 
                 animation ={
                     type = "anim",
@@ -51,7 +52,7 @@ if distance < 1 then
        
       end 
     else
-        ESX.HideUI()
+     --   ESX.HideUI()
   end
 
   Citizen.Wait(interval)
@@ -62,17 +63,16 @@ end)
 -- TRAITEMENT
 
 Citizen.CreateThread(function()
- 
+    
     while true do
         
 local interval = 1 
 local ped = PlayerPedId()   
 local pos = GetEntityCoords(ped)
-local findped = FindFirstPed(ped)
-local findnext = FindNextPed(findped, ped)
 local car = IsPedInAnyVehicle(ped, false)
+local ox_inventory = exports.ox_inventory
 local count = exports.ox_inventory:Search('count', 'plastic')
-local oxy = exports.ox_inventory:Search('count', 'oxy')
+--local oxy = exports.ox_inventory:Search('slot', 'oxy')
 local distance = GetDistanceBetweenCoords(pos, Config.Position.Traitement.x, Config.Position.Traitement.y, Config.Position.Traitement.z, true)
 
 if car then
@@ -98,9 +98,10 @@ end
 if distance < 1 then
 ESX.TextUI(_U('traitement', "info"))
 
- if IsControlJustPressed(1, 51) then
- 
-        ESX.Progressbar('Traitement en cour...', 5000,{
+ if IsControlJustPressed(1, 51) then -- when player press E it will start the traitement of plastic for Oxy
+        
+
+        ESX.Progressbar('Traitement en cour...', 2000,{
          FreezePlayer = true, 
          animation ={
             type = "anim",
@@ -117,12 +118,11 @@ ESX.TextUI(_U('traitement', "info"))
                 TriggerServerEvent("DeuxiemeEvent")
 
             end
-             
         end})
-
+        
  end
 else
-    ESX.HideUI()
+   ESX.HideUI() -- hide taitement info
    
 end
 
@@ -130,21 +130,11 @@ Citizen.Wait(interval)
 
 end
 end
+
 end)
 --
 -- VENTE
 
-Citizen.CreateThread(function()
-    while true do
-        local ped = PlayerPedId()
-
-        Citizen.Wait(500)
-
-        if IsControlJustPressed(1, 244) then
-            Citizen.Wait(500)
-            print('test')
-        end
-    end
-
-
-end)
+  
+  
+  
