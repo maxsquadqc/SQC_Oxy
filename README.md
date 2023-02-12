@@ -1,4 +1,4 @@
-# SQC_Scriptest
+# SQC_Oxy
 My first scipt in Lua
 
 * Pick up Plastic/medicament 
