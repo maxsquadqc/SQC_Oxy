@@ -1,21 +1,24 @@
 Config = {}
-Config.Locale = 'fr'
-Config.OxInventory                = ESX.GetConfig().OxInventory
 
-Config.DrawDistance = 5
-Config.CarDistance = 15
-
-Config.Position = {
-    Recolte = {
-	x = 250.83,
-    y = -1416.54,
-    z = 29.39
-    },
-    Traitement = {
-        x = 264.93,
-        y = -1430.58,
-        z = 29.33
-    },
+Config.Recoltes = {
+    plastic = vector3(250.83, -1416.54, 29.39),-- Item | Coords
+    medicament = vector3(246.85, -1422.44, 29.34), -- item | Coords
 }
 
--- 250.83 , -1416.54 , 29.39
+Config.LimiteOnPlayerRecoltes = 50
+Config.ItemPerRecolteMin = 1
+Config.ItemPerRecolteMax = 5
+
+
+Config.Traitement = {
+    plastic = {
+        coords = vector3(264.93, -1430.58, 29.33), -- Coords
+        item = 'Oxy', -- Item
+        quantity = 3
+    },
+
+}
+
+Config.Vente = {
+    plastic = vector3(0.0, 0.0, 0.0)
+}
