@@ -1,140 +1,107 @@
+ESX = exports['es_extended']:getSharedObject()
 
-ESX = exports["es_extended"]:getSharedObject()
+for k,v in pairs(Config.Recoltes) do
 
--- RECOLTE
-Citizen.CreateThread(function()
+    print(k, v)
 
-            while true do
-                
-                local ox_inventory = exports.ox_inventory
-                local interval = 1 
-                local ped = PlayerPedId()   
-                local pos = GetEntityCoords(ped)
-                local car = IsPedInAnyVehicle(ped, false)
-                local distance = GetDistanceBetweenCoords(pos, Config.Position.Recolte.x, Config.Position.Recolte.y, Config.Position.Recolte.z, true)
-                
-                if car then
-                    Citizen.Wait(0)
+    local RecoltesPoints = lib.points.new(v, 5, {})
 
-                    if distance < Config.CarDistance then
-                    DrawMarker(2, Config.Position.Recolte.x, Config.Position.Recolte.y, Config.Position.Recolte.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 170, 0, 1, 2, 0, nil, nil, 0)
+    function RecoltesPoints:nearby()
 
-                    end
-
-                else
-
-
-  if distance > Config.DrawDistance then
-   
-    interval = 200
-  else
-    interval = 1
-    DrawMarker(2, Config.Position.Recolte.x, Config.Position.Recolte.y, Config.Position.Recolte.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 170, 0, 1, 2, 0, nil, nil, 0)
-
-  end
-
-if distance < 1 then
-    ESX.TextUI(_U('recolte', "info"))
-
-        if IsControlJustPressed(1, 51) then  -- when player press E it will start the recolte of plastic
-            ESX.HideUI()
+        if self.currentDistance < 5 then
+            DrawMarker(2, self.coords.x, self.coords.y, self.coords.z, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 200, 20, 20, 50, false, true, 2, nil, nil, false)
+        end
+        if self.currentDistance <= 2 and IsControlJustReleased(0, 38) then
+            local count = exports.ox_inventory:Search('count', k)
             
-            ESX.Progressbar('Recolte en cour...', 2000,{
-                FreezePlayer = true, 
-                animation ={
-                    type = "anim",
-                    dict = "anim@mp_player_intmenu@key_fob@", 
-                    lib ="fob_click" 
-                }, 
-                onFinish = function()
-                    TriggerServerEvent("PremierEvent")
-            end})
-       
-      end 
-    else
-     --   ESX.HideUI()
-  end
 
-  Citizen.Wait(interval)
-end
-end 
-end)
---
--- TRAITEMENT
+            if count > Config.LimiteOnPlayerRecoltes then 
+                lib.notify({
+                    title = 'Recoltes',
+                    description = 'Vous ne pouvez plus recolter.',
+                    type = 'error'
+                })   
 
-Citizen.CreateThread(function()
-    
-    while true do
-        
-local interval = 1 
-local ped = PlayerPedId()   
-local pos = GetEntityCoords(ped)
-local car = IsPedInAnyVehicle(ped, false)
-local ox_inventory = exports.ox_inventory
-local count = exports.ox_inventory:Search('count', 'plastic')
---local oxy = exports.ox_inventory:Search('slot', 'oxy')
-local distance = GetDistanceBetweenCoords(pos, Config.Position.Traitement.x, Config.Position.Traitement.y, Config.Position.Traitement.z, true)
-
-if car then
-    Citizen.Wait(0)
-    if distance < Config.CarDistance then
-        
-    DrawMarker(2, Config.Position.Traitement.x, Config.Position.Traitement.y, Config.Position.Traitement.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 170, 0, 1, 2, 0, nil, nil, 0)
-    end
-else
-
-if distance > Config.DrawDistance then
-interval = 200
-
-else
-
-    
-interval = 1
-
-DrawMarker(2, Config.Position.Traitement.x, Config.Position.Traitement.y, Config.Position.Traitement.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 255, 0, 0, 170, 0, 1, 2, 0, nil, nil, 0)
-
-end
-
-if distance < 1 then
-ESX.TextUI(_U('traitement', "info"))
-
- if IsControlJustPressed(1, 51) then -- when player press E it will start the traitement of plastic for Oxy
-        
-
-        ESX.Progressbar('Traitement en cour...', 2000,{
-         FreezePlayer = true, 
-         animation ={
-            type = "anim",
-            dict = "anim@mp_player_intmenu@key_fob@", 
-            lib ="fob_click" 
-         }, 
-         onFinish = function()
-            if count < 2 then
-                ESX.ShowNotification('Vous aver '..count.." Plastic", 'error', 1000)
-                Citizen.Wait(1000)
-                ESX.ShowNotification(_U('plastic_err', 'error', 1000))
-                
-                else
-                TriggerServerEvent("DeuxiemeEvent")
-
+                return
             end
-        end})
-        
- end
-else
-   ESX.HideUI() -- hide taitement info
-   
+
+            if lib.progressCircle({
+                duration = 2000,
+                position = 'bottom',
+                useWhileDead = false,
+                canCancel = false,
+                disable = {
+                    car = true,
+                    combat = true,
+                    move = true,
+                },
+                anim = {
+                    dict = 'mp_player_intdrink',
+                    clip = 'loop_bottle'
+                },
+                prop = {
+                    model = `prop_ld_flow_bottle`,
+                    pos = vec3(0.03, 0.03, 0.02),
+                    rot = vec3(0.0, 0.0, -1.5)
+                },
+            }) then 
+                TriggerServerEvent('sqc_recoltes:recolte', k)
+            end
+        end
+    end
 end
 
-Citizen.Wait(interval)
 
+    
+for k,v in pairs(Config.Traitement) do
+
+    print(k, v)
+
+    local TraitementPoints = lib.points.new(v.coords, 5, {})
+
+    function TraitementPoints:nearby()
+
+        if self.currentDistance < 5 then
+            DrawMarker(2, self.coords.x, self.coords.y, self.coords.z, 0.0, 0.0, 0.0, 0.0, 180.0, 0.0, 1.0, 1.0, 1.0, 200, 20, 20, 50, false, true, 2, nil, nil, false)
+        end
+        if self.currentDistance <= 2 and IsControlJustReleased(0, 38) then
+            local count = exports.ox_inventory:Search('count', k)
+            local hasPlastic = exports.ox_inventory:Search('count', 'plastic')
+            local hasMedicament = exports.ox_inventory:Search('count', 'medicament')
+            if hasPlastic >= 2 and hasMedicament >= 2 then 
+               
+            if lib.progressCircle({
+                duration = 2000,
+                position = 'bottom',
+                useWhileDead = false,
+                canCancel = false,
+                disable = {
+                    car = true,
+                    combat = true,
+                    move = true,
+                },
+                anim = {
+                    dict = 'mp_player_intdrink',
+                    clip = 'loop_bottle'
+                },
+                prop = {
+                    model = `prop_ld_flow_bottle`,
+                    pos = vec3(0.03, 0.03, 0.02),
+                    rot = vec3(0.0, 0.0, -1.5)
+                },
+            }) then
+               TriggerServerEvent('sqc_recoltes:traitement', k, count, v.item, v.quantity)
+            end
+            else
+           
+                lib.notify({
+                    title = 'Traitement',
+                    description = 'Vous n\'avez pas les ingredients nécessaire pour traiter.',
+                    type = 'error'
+                })   
+
+                return
+            end
+        end
+    end
 end
-end
-
-end)
---
--- VENTE
-
-  
-  
-  
