@@ -1,39 +1,56 @@
+ESX = exports['es_extended']:getSharedObject()
+local ox_inventory = exports.ox_inventory
 
-ESX = exports["es_extended"]:getSharedObject()
+RegisterNetEvent('sqc_recoltes:recolte')
+AddEventHandler('sqc_recoltes:recolte', function(Item)
+    if Item == nil then return end 
+    local source = source
 
-RegisterNetEvent("PremierEvent")
+    local countItem = ox_inventory:Search(source, 'count', Item)
+    local randomQuantity = math.random(Config.ItemPerRecolteMin, Config.ItemPerRecolteMax)
+    if countItem > Config.LimiteOnPlayerRecoltes then 
+        return
 
-AddEventHandler("PremierEvent", function()
-    local _src = source
-    local random = math.random(1, 3) --Returns a number between 1 and 3
-    print("Premiere demande recu")
-    exports.ox_inventory:AddItem(_src, 'plastic', random)
-    Citizen.Wait(10)
-    TriggerClientEvent('esx:showNotification', _src, 'Vous avez recu '..random..' plastic', 'success', 2000)
-
-end)
-
-RegisterNetEvent("DeuxiemeEvent")
-
-AddEventHandler("DeuxiemeEvent", function()
-    local _src = source
-    local ox_inv = exports.ox_inventory
-    local random = math.random(1, 3) --Returns a number between 1 and 3
-    print("Deuxieme demande recu")
-    
-    ox_inv:RemoveItem(_src, 'plastic', 2)
-    Citizen.Wait(500)
-    ox_inv:AddItem(_src, 'oxy', random)
-    Citizen.Wait(10)
-    TriggerClientEvent('esx:showNotification', _src, 'Vous avez recu '..random..' oxy', 'success', 2000)
-
+    else 
+        if ox_inventory:CanCarryItem(source, Item, randomQuantity) then
+            ox_inventory:AddItem(source, Item, randomQuantity)
+        else
+            lib.notify({
+                title = 'Recolte',
+                description = 'Vous ne pouvez plus rammasser de Plastic, penser a les traiter.',
+                type = 'error'
+            })
+        end
+    end
 
 end)
 
-RegisterNetEvent("test")
 
-AddEventHandler("test", function()
-    local _src = source
-    exports.ox_inventory:Search(inv, search, item, 'dodo')
+RegisterNetEvent('sqc_recoltes:traitement')
+AddEventHandler('sqc_recoltes:traitement', function(Item, Quantity, ItemReward, QuantityReward)
+    if Item == nil then return end 
+    if Quantity == nil then return end
+    if ItemReward == nil then return end
+    if QuantityReward == nil then return end
+
+    local source = source
+
+   -- local countItem = ox_inventory:Search(source, 'count', Item)
+   local hasPlastic = ox_inventory:Search(source, 'count', 'plastic')
+   local hasMedicament = ox_inventory:Search(source, 'count', 'medicament')
+    local randomQuantity = math.random(1, QuantityReward)
+
+    if hasPlastic >= 2 and hasMedicament >= 2 then       
+        if ox_inventory:CanCarryItem(source, Item, randomQuantity) then
+            ox_inventory:RemoveItem(source, 'plastic', 2)
+            ox_inventory:RemoveItem(source, 'medicament', 2)
+            ox_inventory:AddItem(source, 'Oxy', randomQuantity)
+        else
+ 
+        end
+    else 
+
+        return
+    end
 
 end)
